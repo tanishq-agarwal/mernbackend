@@ -36,6 +36,29 @@ app.get("/secret", auth , (req, res) => {
     res.render("secret");
 })
 
+app.get("/logout", auth , async(req, res) => {
+    try{
+        console.log(req.user);
+
+        //for single logout
+        // req.user.tokens = req.user.tokens.filter((currElem) => {
+        //     return currElem.token !== req.token;
+        // })
+
+        //logout from all devices
+        req.user.tokens = [];
+
+        res.clearCookie("jwt");
+        console.log("logout successfully");
+
+        await req.user.save();
+        res.render("login");
+    }
+    catch(err){
+        res.status(500).send(error);
+    }
+})
+
 app.get("/about", (req, res) => {
     res.render('about')
 })
@@ -118,7 +141,7 @@ app.post("/login", async (req, res) => {
         console.log(token);
 
         res.cookie("jwt", token,{
-            expires: new Date(Date.now() + 50000),
+            expires: new Date(Date.now() + 60000),
             httpOnly: true,
             // secure: true
         });
